@@ -14,6 +14,7 @@
 #include <string>
 #include <cstdint>
 #include <memory>
+#include <ctime>
 
 // 定义 uint 类型（TRAC-IK 代码中使用）
 #ifndef uint
@@ -71,7 +72,16 @@ public:
             now.time_since_epoch()) % 1000;
         
         std::stringstream ss;
-        ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
+        
+        // Windows 使用 localtime_s，Linux/Mac 使用 localtime
+        #ifdef _WIN32
+            struct tm timeinfo;
+            localtime_s(&timeinfo, &time);
+            ss << std::put_time(&timeinfo, "%Y-%m-%d %H:%M:%S");
+        #else
+            ss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
+        #endif
+        
         ss << '.' << std::setfill('0') << std::setw(3) << ms.count();
         return ss.str();
     }
