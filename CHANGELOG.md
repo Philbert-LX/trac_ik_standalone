@@ -10,12 +10,9 @@ All notable changes to this standalone version of TRAC-IK will be documented in 
 - Standalone CMakeLists.txt for non-ROS compilation
 - Build scripts for Windows (`build_standalone.bat`) and Linux/Mac (`build_standalone.sh`)
 - Comprehensive documentation:
-  - `COMPILE_GUIDE.md` - Complete compilation guide
-  - `QUICK_START.md` - Quick start guide
-  - `MODIFICATIONS_SUMMARY.md` - Detailed modification summary
-  - `BUILD_STANDALONE.md` - Standalone build documentation
-  - `OPEN_SOURCE_GUIDE.md` - Open source compliance guide
-  - `README_STANDALONE.md` - Standalone version README
+  - `README.md` - Main documentation
+  - `API_USAGE_EXAMPLES.md` - API usage guide with examples
+  - `CHANGELOG.md` - Version history
 
 ### Modified
 - `trac_ik_lib/include/trac_ik/trac_ik.hpp`

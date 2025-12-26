@@ -24,7 +24,7 @@ TRAC-IK 是一个高性能的逆运动学（IK）求解器，专门设计用于�
 - ✅ 添加了 `rclcpp_logger_stub.hpp` 作为日志替代实现
 - ✅ 支持条件编译（通过 `USE_ROS` 宏）
 - ✅ 添加了独立的 CMakeLists.txt
-- ✅ 保留了所有核心 IK 功能
+- ✅ **保留了所有核心 IK 功能**
 
 ## 📋 依赖项
 
@@ -54,12 +54,6 @@ brew install nlopt eigen
 
 ## 🚀 快速开始
 
-### 使用示例
-
-完整的使用示例请参考：
-- [API 使用示例](API_USAGE_EXAMPLES.md) - 详细的 API 使用指南和代码示例
-- [示例程序](examples/basic_ik_example.cpp) - 可编译运行的完整示例
-
 ### 编译
 
 ```bash
@@ -77,16 +71,6 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DUSE_ROS=0
 
 # 编译
 cmake --build . --config Release
-```
-
-或使用提供的脚本：
-```bash
-# Windows
-.\build_standalone.bat
-
-# Linux/Mac
-chmod +x build_standalone.sh
-./build_standalone.sh
 ```
 
 ### 使用示例
@@ -129,12 +113,87 @@ if (result >= 0) {
 - 📖 [完整 API 使用指南](API_USAGE_EXAMPLES.md) - 详细的使用示例和最佳实践
 - 💻 [可运行示例程序](examples/basic_ik_example.cpp) - 完整的编译运行示例
 
+## 🔧 集成到项目
+
+### Visual Studio 项目设置
+
+1. **添加包含目录**：
+   ```
+   ..\trac_ik\trac_ik_lib\include
+   ```
+
+2. **添加库目录**：
+   ```
+   ..\trac_ik\trac_ik_lib\build\Release
+   C:\vcpkg\installed\x64-windows\lib
+   ```
+
+3. **添加库依赖**：
+   ```
+   trac_ik.lib
+   nlopt.lib
+   orocos-kdl.lib
+   ```
+
+### CMake 项目集成
+
+```cmake
+# 添加包含目录
+include_directories(${CMAKE_SOURCE_DIR}/trac_ik/trac_ik_lib/include)
+
+# 链接库目录
+link_directories(${CMAKE_SOURCE_DIR}/trac_ik/trac_ik_lib/build/Release)
+
+# 链接库
+target_link_libraries(your_target
+    trac_ik
+    nlopt
+    orocos-kdl
+)
+```
+
+## ⚠️ 故障排除
+
+### 找不到 KDL
+```bash
+# 设置 KDL 路径
+cmake .. -DKDL_DIR=/path/to/kdl/install
+```
+
+### 找不到 NLopt
+```bash
+# Windows (vcpkg)
+cmake .. -DCMAKE_PREFIX_PATH="C:/vcpkg/installed/x64-windows"
+
+# Linux
+sudo apt-get install libnlopt-dev
+```
+
+### 链接错误
+确保链接了所有依赖：
+- `trac_ik.lib` (或 `.a`)
+- `orocos-kdl.lib`
+- `nlopt.lib`
+- `Eigen3` (通常是头文件库)
+
+### 编译错误：找不到 rclcpp
+确保编译时设置了 `USE_ROS=0`（默认值）。源码已修改完成，无需手动修改。
+
+## 📊 性能对比
+
+根据原始 TRAC-IK 的测试结果（10,000 次随机可达配置测试）：
+
+| 机器人 | DOFs | KDL 成功率 | TRAC-IK 成功率 | TRAC-IK 平均时间 |
+|--------|------|-----------|---------------|-----------------|
+| ABB IRB120 | 6 | 39.41% | **99.96%** | 0.24ms |
+| KUKA LBR iiwa 14 | 7 | 38.09% | **99.92%** | 0.28ms |
+| Universal UR5 | 6 | 16.52% | **99.17%** | 0.37ms |
+| Franka Emika Panda | 7 | 62.02% | **99.88%** | 0.37ms |
+
 ## 📚 文档
 
-- [完整编译指南](COMPILE_GUIDE.md) - 详细的编译说明和故障排除
-- [快速开始](QUICK_START.md) - 快速上手指南
-- [修改说明](MODIFICATIONS_SUMMARY.md) - 详细的修改记录
-- [构建文档](BUILD_STANDALONE.md) - 独立构建说明
+- [API 使用示例](API_USAGE_EXAMPLES.md) - 详细的 API 使用指南和代码示例
+- [修改记录](CHANGELOG.md) - 版本更新历史
 
 ## ⚖️ License & Copyright
 
@@ -151,17 +210,6 @@ See [LICENSE.txt](LICENSE.txt) for the full license text.
 
 感谢 **TRACLabs, Inc.** 开发了优秀的 TRAC-IK 库。
 
-## 📊 性能对比
-
-根据原始 TRAC-IK 的测试结果（10,000 次随机可达配置测试）：
-
-| 机器人 | DOFs | KDL 成功率 | TRAC-IK 成功率 | TRAC-IK 平均时间 |
-|--------|------|-----------|---------------|-----------------|
-| ABB IRB120 | 6 | 39.41% | **99.96%** | 0.24ms |
-| KUKA LBR iiwa 14 | 7 | 38.09% | **99.92%** | 0.28ms |
-| Universal UR5 | 6 | 16.52% | **99.17%** | 0.37ms |
-| Franka Emika Panda | 7 | 62.02% | **99.88%** | 0.37ms |
-
 ## 🔗 相关链接
 
 - [原始 TRAC-IK 项目](https://bitbucket.org/traclabs/trac_ik)
@@ -169,11 +217,6 @@ See [LICENSE.txt](LICENSE.txt) for the full license text.
 - [KDL 项目](https://www.orocos.org/kdl.html)
 - [NLopt 项目](https://nlopt.readthedocs.io/)
 
-## 📝 修改记录
-
-详见 [MODIFICATIONS_SUMMARY.md](MODIFICATIONS_SUMMARY.md)
-
 ---
 
 **注意**: 本版本专注于非 ROS 环境使用。如果需要 ROS 支持，请使用原始 TRAC-IK 项目或设置 `USE_ROS=1` 编译。
-
